@@ -1,12 +1,18 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 import type { GenerateContentResponse } from '@google/genai';
 
-// Assume API_KEY is set in the environment
+// 构建时由 Vite 注入：见 .env / .env.local 中 GEMINI_API_KEY、GEMINI_API_BASE_URL
 const API_KEY = process.env.API_KEY;
+const API_BASE_URL = process.env.GEMINI_API_BASE_URL;
 if (!API_KEY) {
   console.warn("API_KEY environment variable not set. Using a placeholder. App will not function correctly.");
 }
-const ai = new GoogleGenAI({ apiKey: API_KEY || "YOUR_API_KEY_HERE" });
+const ai = new GoogleGenAI({
+  apiKey: API_KEY || "YOUR_API_KEY_HERE",
+  ...(API_BASE_URL
+    ? { httpOptions: { baseUrl: API_BASE_URL } }
+    : {}),
+});
 
 
 const MAX_RETRIES = 3;

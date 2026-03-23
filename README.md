@@ -9,6 +9,8 @@
 
 基于 NanoBanana + Veo 的开源工作流创意平台
 
+**开源仓库：** [github.com/asher-y-ma/mccum-BananaFlow-ZHO](https://github.com/asher-y-ma/mccum-BananaFlow-ZHO)
+
 <img width="2578" height="1572" alt="screenshot-20250911-183652" src="https://github.com/user-attachments/assets/1920deb8-f859-4528-8c4c-24f2d27080b8" />
 
 ##  全新功能：工作流 + 窗口 双模式纵享丝滑
@@ -76,7 +78,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1LaFPPkxLyV2lUTHoxpeoxW
 
 ## Stars 
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ZHO-ZHO-ZHO/BananaFlow&type=Date)](https://star-history.com/#ZHO-ZHO-ZHO/BananaFlow&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=asher-y-ma/mccum-BananaFlow-ZHO&type=Date)](https://star-history.com/#asher-y-ma/mccum-BananaFlow-ZHO&Date)
 
 
 ## 关于我 | About me

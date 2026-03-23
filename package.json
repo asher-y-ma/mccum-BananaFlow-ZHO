@@ -1,5 +1,9 @@
 {
   "name": "copy2-of-bananaflow｜zho",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asher-y-ma/mccum-BananaFlow-ZHO.git"
+  },
   "private": true,
   "version": "0.0.0",
   "type": "module",

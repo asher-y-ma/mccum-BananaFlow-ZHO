@@ -87,7 +87,6 @@ const formatError = (error: any, context: string): string => {
 };
 
 const generateContentWithRetry = withRetry(ai.models.generateContent);
-const generateImagesWithRetry = withRetry(ai.models.generateImages);
 const generateVideosWithRetry = withRetry(ai.models.generateVideos);
 const getVideosOperationWithRetry = withRetry(ai.operations.getVideosOperation);
 
@@ -127,22 +126,24 @@ export const generateText = async (prompt: string): Promise<string> => {
 export const generateImage = async (prompt: string): Promise<string> => {
     if (!prompt) return "Error: Prompt is empty.";
     try {
-        const response = await generateImagesWithRetry({
-            model: 'imagen-4.0-generate-001',
-            prompt: prompt,
+        const response: GenerateContentResponse = await generateContentWithRetry({
+            model: 'gemini-3.1-flash-image',
+            contents: prompt,
             config: {
-              numberOfImages: 1,
-              outputMimeType: 'image/jpeg',
+                responseModalities: [Modality.IMAGE, Modality.TEXT],
             },
         });
 
-        if (response.generatedImages && response.generatedImages.length > 0 && response.generatedImages[0].image) {
-            const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
-            const mimeType = response.generatedImages[0].image.mimeType || 'image/jpeg';
-            return `data:${mimeType};base64,${base64ImageBytes}`;
+        const parts = response.candidates?.[0]?.content?.parts;
+        if (parts) {
+            for (const part of parts) {
+                if (part.inlineData?.data) {
+                    const mimeType = part.inlineData.mimeType || 'image/png';
+                    return `data:${mimeType};base64,${part.inlineData.data}`;
+                }
+            }
         }
         return "Error: Image generation failed to produce an image.";
-
     } catch (error) {
         return formatError(error, "generateImage");
     }
@@ -159,7 +160,7 @@ export const editImage = async (
         const textPart = { text: prompt };
 
         const response: GenerateContentResponse = await generateContentWithRetry({
-            model: 'gemini-2.5-flash-image-preview',
+            model: 'gemini-3.0-pro-image',
             contents: { parts: [imagePart, textPart] },
             config: {
                 responseModalities: [Modality.IMAGE, Modality.TEXT],
@@ -196,7 +197,7 @@ export const executePreset = async (
         const allParts = [...imageParts, textPart];
 
         const response: GenerateContentResponse = await generateContentWithRetry({
-            model: 'gemini-2.5-flash-image-preview',
+            model: 'gemini-3.0-pro-image',
             contents: { parts: allParts },
             config: {
                 responseModalities: [Modality.IMAGE, Modality.TEXT],
@@ -234,7 +235,7 @@ export const generateVideo = async (
         
         if (base64Image && mimeType) {
             operation = await generateVideosWithRetry({
-              model: 'veo-2.0-generate-001',
+              model: 'veo-3.1-generate-preview',
               prompt,
               image: {
                 imageBytes: base64Image,
@@ -244,7 +245,7 @@ export const generateVideo = async (
             });
         } else {
              operation = await generateVideosWithRetry({
-                model: 'veo-2.0-generate-001',
+                model: 'veo-3.1-generate-preview',
                 prompt,
                 config: { numberOfVideos: 1 }
             });

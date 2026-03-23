@@ -596,7 +596,8 @@ const App: React.FC = () => {
                     // Edit mode
                     const result = await geminiService.editImage(imageFile.data, imageFile.mimeType, textInput);
                     if (result && result.newBase64Image) {
-                        const dataUrl = `data:${imageFile.mimeType};base64,${result.newBase64Image}`;
+                        const outMime = result.outputMimeType ?? imageFile.mimeType;
+                        const dataUrl = `data:${outMime};base64,${result.newBase64Image}`;
                         output = { image: dataUrl, text: result.text };
 
                         const historyItem: HistoryItem = {
@@ -648,7 +649,8 @@ const App: React.FC = () => {
                 if (imageFiles.length > 0 && node.data.prompt) {
                     const result = await geminiService.executePreset(imageFiles, node.data.prompt);
                      if (result && result.newBase64Image) {
-                      const dataUrl = `data:${imageFiles[0].mimeType};base64,${result.newBase64Image}`;
+                      const outMime = result.outputMimeType ?? imageFiles[0].mimeType;
+                      const dataUrl = `data:${outMime};base64,${result.newBase64Image}`;
                       output = { image: dataUrl, text: result.text };
                       
                       const historyItem: HistoryItem = {

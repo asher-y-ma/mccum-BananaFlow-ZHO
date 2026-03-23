@@ -26,7 +26,7 @@ const createNode = (type: NodeType, position: Point, presetId?: string): Node =>
     case NodeType.IMAGE_EDITOR:
       return { ...baseNode, data: { ...baseNode.data, width: 320, height: 100, label: 'Image Generator/Editor', inputs: [{ id: `${id}-input-image`, label: 'Image (Optional)', type: 'image' }, { id: `${id}-input-text`, label: 'Prompt', type: 'text' }], outputs: [{ id: `${id}-output-image`, label: 'Image', type: 'image' }, { id: `${id}-output-text`, label: 'Text', type: 'text' }] } };
     case NodeType.VIDEO_GENERATOR:
-      return { ...baseNode, data: { ...baseNode.data, width: 320, height: 100, label: 'Video Generator', inputs: [{ id: `${id}-input-image`, label: 'Image', type: 'image' }, { id: `${id}-input-text`, label: 'Text', type: 'text' }], outputs: [{ id: `${id}-output`, label: 'Video', type: 'video' }] } };
+      return { ...baseNode, data: { ...baseNode.data, width: 320, height: 280, label: 'Video Generator', inputs: [{ id: `${id}-input-image`, label: 'Image', type: 'image' }, { id: `${id}-input-text`, label: 'Text', type: 'text' }], outputs: [{ id: `${id}-output`, label: 'Video', type: 'video' }] } };
     case NodeType.OUTPUT_DISPLAY:
       return { ...baseNode, data: { ...baseNode.data, width: 350, label: 'Output', inputs: [{ id: `${id}-input`, label: 'Input', type: 'any' }] } };
     case NodeType.PROMPT_PRESET:
@@ -680,6 +680,15 @@ const App: React.FC = () => {
                   textInput,
                   (progress) => { updateNodeData(nodeId, { content: { progress } }); }
               );
+              if (typeof output === 'string' && output.startsWith('blob:')) {
+                const historyItem: HistoryItem = {
+                  id: crypto.randomUUID(),
+                  type: 'video',
+                  dataUrl: output,
+                  prompt: textInput || '',
+                };
+                setHistory((prev) => [historyItem, ...prev]);
+              }
               break;
             }
             case NodeType.OUTPUT_DISPLAY:

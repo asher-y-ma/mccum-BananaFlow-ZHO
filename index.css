@@ -1,0 +1,7 @@
+/* 全局补充样式；主要样式由 Tailwind CDN 提供 */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}

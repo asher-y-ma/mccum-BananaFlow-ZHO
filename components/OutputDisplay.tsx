@@ -68,11 +68,12 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({ content, status, e
 
   if (status === NodeStatus.COMPLETED && content) {
     if (typeof content === 'string') {
-        if (content.startsWith('data:image')) {
-            return renderMedia(content);
+        const s = content.trim();
+        if (s.startsWith('data:image')) {
+            return renderMedia(s);
         }
-        if (content.startsWith('blob:')) { // Video
-             return renderMedia(content, true);
+        if (s.startsWith('blob:')) {
+             return renderMedia(s, true);
         }
         return <div className="p-4 text-sm text-gray-300 whitespace-pre-wrap overflow-y-auto w-full h-full">{content}</div>;
     }

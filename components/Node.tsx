@@ -138,8 +138,51 @@ const NodeComponent: React.FC<NodeProps> = ({ node, isSelected, onMouseDown, onH
         ) : <div className="p-2 w-full h-full"><FileUploader onFileUpload={(file) => updateNodeData(node.id, { content: file })} /></div>;
       case NodeType.TEXT_GENERATOR:
       case NodeType.IMAGE_EDITOR:
-      case NodeType.VIDEO_GENERATOR:
         return <div className="flex items-center justify-center h-full text-xs p-4 text-center" style={{ color: 'var(--node-text-color, #ffffff)', opacity: 0.7 }}>Ready for input</div>;
+      case NodeType.VIDEO_GENERATOR: {
+        if (data.status === NodeStatus.PROCESSING) {
+          return (
+            <div className="flex flex-col items-center justify-center w-full h-full p-4 space-y-2">
+              <div className="w-8 h-8 border-4 border-t-indigo-400 border-gray-600 rounded-full animate-spin" />
+              <p className="text-xs text-center" style={{ color: 'var(--node-text-color, #ffffff)', opacity: 0.85 }}>
+                {typeof data.content === 'object' && data.content?.progress ? data.content.progress : 'Generating video...'}
+              </p>
+            </div>
+          );
+        }
+        if (data.status === NodeStatus.ERROR) {
+          return (
+            <div className="p-3 text-xs text-red-400 break-words overflow-y-auto max-h-full">{data.errorMessage || 'Error'}</div>
+          );
+        }
+        if (
+          data.status === NodeStatus.COMPLETED &&
+          typeof data.content === 'string'
+        ) {
+          const c = data.content.trim();
+          if (c.startsWith('blob:')) {
+            return (
+              <video
+                src={c}
+                controls
+                playsInline
+                className="object-contain w-full h-full min-h-[200px] bg-black/40"
+              />
+            );
+          }
+          if (c.startsWith('Error:')) {
+            return <div className="p-3 text-xs text-red-400 break-words">{c}</div>;
+          }
+        }
+        return (
+          <div
+            className="flex items-center justify-center h-full text-xs p-4 text-center"
+            style={{ color: 'var(--node-text-color, #ffffff)', opacity: 0.7 }}
+          >
+            Ready for input
+          </div>
+        );
+      }
       case NodeType.PROMPT_PRESET:
         return (
           <div className="flex items-center justify-center h-full">
@@ -160,7 +203,13 @@ const NodeComponent: React.FC<NodeProps> = ({ node, isSelected, onMouseDown, onH
   }, [node.type, data, node.id, updateNodeData, imageUrl, onEditPrompt]);
   
   const width = data.width || 320;
-  const height = data.height || (node.type === NodeType.IMAGE_INPUT || node.type === NodeType.OUTPUT_DISPLAY ? 350 : 150);
+  const height =
+    data.height ||
+    (node.type === NodeType.IMAGE_INPUT || node.type === NodeType.OUTPUT_DISPLAY
+      ? 350
+      : node.type === NodeType.VIDEO_GENERATOR
+        ? 280
+        : 150);
   const isPresetNode = node.type === NodeType.PROMPT_PRESET;
 
   return (

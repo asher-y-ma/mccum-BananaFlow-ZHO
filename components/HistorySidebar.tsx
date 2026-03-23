@@ -12,10 +12,10 @@ interface HistorySidebarProps {
 }
 
 const HistorySidebar: React.FC<HistorySidebarProps> = ({ history, onUseAsInput, isCollapsed, onToggle, theme }) => {
-  const handleDownload = (dataUrl: string) => {
+  const handleDownload = (dataUrl: string, isVideo: boolean) => {
     const link = document.createElement('a');
     link.href = dataUrl;
-    link.download = `history-${Date.now()}.png`;
+    link.download = isVideo ? `history-${Date.now()}.mp4` : `history-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -37,15 +37,20 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({ history, onUseAsInput, 
         <h2 className="text-xl font-bold mb-4 text-white flex-shrink-0">Generation History</h2>
         {history.length === 0 ? (
           <div className="flex-grow flex items-center justify-center text-center">
-              <p className="text-gray-500">Generated images will appear here.</p>
+              <p className="text-gray-500">Generated images and videos will appear here.</p>
           </div>
         ) : (
         <div className="flex-grow overflow-y-auto pr-2 space-y-4">
           {history.map((item) => (
             <div key={item.id} className="bg-white/5 p-3 rounded-lg">
-              <img src={item.dataUrl} alt="Generated asset" className="w-full rounded-md mb-3" />
+              {item.type === 'video' ? (
+                <video src={item.dataUrl} controls playsInline className="w-full rounded-md mb-3 max-h-48 object-contain bg-black/40" />
+              ) : (
+                <img src={item.dataUrl} alt="Generated asset" className="w-full rounded-md mb-3" />
+              )}
               <p className="text-xs text-gray-400 mb-3 line-clamp-3" title={item.prompt}>{item.prompt}</p>
               <div className="flex items-center justify-end space-x-2">
+                {item.type === 'image' ? (
                 <button 
                   onClick={() => onUseAsInput(item.dataUrl)}
                   className="flex items-center px-3 py-1 text-xs text-white rounded-md"
@@ -55,10 +60,11 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({ history, onUseAsInput, 
                   <UploadIcon className="w-4 h-4 mr-1.5" />
                   Use
                 </button>
+                ) : null}
                 <button 
-                  onClick={() => handleDownload(item.dataUrl)}
+                  onClick={() => handleDownload(item.dataUrl, item.type === 'video')}
                   className="flex items-center p-2 text-xs text-gray-300 bg-gray-700/50 rounded-md hover:bg-gray-600"
-                  title="Download Image"
+                  title={item.type === 'video' ? 'Download Video' : 'Download Image'}
                 >
                   <DownloadIcon className="w-4 h-4" />
                 </button>

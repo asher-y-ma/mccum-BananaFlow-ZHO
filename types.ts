@@ -64,7 +64,7 @@ export interface Point {
 
 export interface HistoryItem {
   id: string;
-  type: 'image';
+  type: 'image' | 'video';
   dataUrl: string;
   prompt: string;
 }

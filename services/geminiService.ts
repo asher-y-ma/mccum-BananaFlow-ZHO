@@ -88,7 +88,10 @@ const formatError = (error: any, context: string): string => {
 
 const generateContentWithRetry = withRetry(ai.models.generateContent);
 const generateVideosWithRetry = withRetry(ai.models.generateVideos);
-const getVideosOperationWithRetry = withRetry(ai.operations.getVideosOperation);
+// Operations 上为普通 class 方法，直接传入 withRetry 会丢失 this，导致 this.apiClient 为 undefined
+const getVideosOperationWithRetry = withRetry(
+    ai.operations.getVideosOperation.bind(ai.operations),
+);
 
 // Helper to convert File object to base64
 const fileToGenerativePart = async (file: File) => {
